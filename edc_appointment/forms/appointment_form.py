@@ -68,8 +68,8 @@ class AppointmentForm(forms.ModelForm):
                 options.update({'id': self.instance.id})
             except AttributeError:
                 pass
-            Appointment.validate_continuation_appt_datetime(
-                Appointment(**options), exception_cls=forms.ValidationError)
+#            Appointment.validate_continuation_appt_datetime(
+#                Appointment(**options), exception_cls=forms.ValidationError)
 
     def validate_status_if_data_unkeyed(self):
         cleaned_data = self.cleaned_data

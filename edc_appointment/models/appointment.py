@@ -128,7 +128,12 @@ class Appointment(SyncModelMixin, BaseUuidModel):
             if self.visit_instance == '0':
                 self.appt_datetime, self.best_appt_datetime = self.validate_appt_datetime()
             else:
-                self.appt_datetime, self.best_appt_datetime = self.validate_continuation_appt_datetime()
+                base_appointment = self.__class__.objects.get(
+                    registered_subject=self.registered_subject,
+                    visit_definition=self.visit_definition,
+                    visit_instance='0')
+                self.best_appt_datetime = base_appointment.best_appt_datetime
+#                self.appt_datetime, self.best_appt_datetime = self.validate_continuation_appt_datetime()
             self.check_window_period()
             self.appt_status = self.get_appt_status(using)
         super(Appointment, self).save(*args, **kwargs)
