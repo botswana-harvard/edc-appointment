@@ -53,7 +53,8 @@ class TestAppointment(BaseTestCase):
             appt_datetime=timezone.now() + relativedelta(days=5),
             visit_definition=self.visit_definition,
             visit_instance='1')
-        self.assertGreaterEqual((continuation_appt.appt_datetime - appointment.appt_datetime).days, 1)
+        self.assertGreaterEqual(
+            (continuation_appt.appt_datetime - appointment.appt_datetime).days, 1)
 
     def test_create_continuation_appointment_same_day(self):
         """Asserts continuation appointment datetime is same day as the previous."""
@@ -61,7 +62,8 @@ class TestAppointment(BaseTestCase):
             registered_subject=self.registered_subject,
             appt_datetime=timezone.now(),
             visit_definition=self.visit_definition)
-        self.assertLessEqual((continuation_appt.appt_datetime - appointment.appt_datetime).days, 0)
+        self.assertLessEqual(
+            (continuation_appt.appt_datetime - self.appointment.appt_datetime).days, 0)
 
     def test_delete_appointment(self):
         """Asserts that appointment can be deleted.
