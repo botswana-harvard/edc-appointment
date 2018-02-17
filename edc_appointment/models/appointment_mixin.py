@@ -37,7 +37,7 @@ class AppointmentMixin(models.Model):
         self.post_prepare_appointments(appointments, using)
 
     def create_all(self, base_appt_datetime=None, using=None,
-                   visit_definitions=None, dashboard_type=None):
+                   visit_definitions=None, dashboard_type=None, instruction=None):
         """Creates appointments for a registered subject based on a list
         of visit definitions for the given membership form instance.
 
@@ -50,7 +50,7 @@ class AppointmentMixin(models.Model):
         """
         appointments = []
         default_appt_type = self.get_default_appt_type(self.registered_subject)
-        for visit_definition in self.visit_definitions_for_schedule(self._meta.model_name):
+        for visit_definition in self.visit_definitions_for_schedule(model_name=self._meta.model_name, instruction=instruction):
             appointment = self.update_or_create_appointment(
                 self.registered_subject,
                 base_appt_datetime or self.get_registration_datetime(),
@@ -80,12 +80,16 @@ class AppointmentMixin(models.Model):
                 pass
         return default_appt_type
 
-    def visit_definitions_for_schedule(self, model_name):
+    def visit_definitions_for_schedule(self, model_name=None, instruction=None):
         """Returns a visit_definition queryset for this membership form's schedule."""
         # VisitDefinition = get_model('edc_visit_schedule', 'VisitDefinition')
         schedule = self.schedule(model_name)
-        visit_definitions = VisitDefinition.objects.filter(
-            schedule=schedule).order_by('time_point')
+        if instruction:
+            visit_definitions = VisitDefinition.objects.filter(
+                schedule=schedule, instruction=instruction).order_by('time_point')
+        else:
+            visit_definitions = VisitDefinition.objects.filter(
+                schedule=schedule, instruction=instruction).order_by('time_point')
         if not visit_definitions:
             raise AppointmentCreateError(
                 'No visit_definitions found for membership form class {0} '
@@ -126,11 +130,11 @@ class AppointmentMixin(models.Model):
                 appt_type=default_appt_type)
         return appointment
 
-    def schedule(self, model_name):
+    def schedule(self, model_name=None, group_name=None):
         """Returns the schedule for this membership_form."""
         try:
             schedule = Schedule.objects.get(
-                membership_form__content_type_map__model=model_name)
+                membership_form__content_type_map__model=model_name, group_name=group_name)
         except Schedule.DoesNotExist:
             raise Schedule.DoesNotExist(
                 'Cannot prepare appointments for membership form. '
