@@ -64,7 +64,8 @@ class Appointment(SyncModelMixin, BaseUuidModel):
         null=True,
         editable=False)
 
-    time_point_status = models.ForeignKey(TimePointStatus, null=True, blank=True)
+    time_point_status = models.ForeignKey(
+        TimePointStatus, null=True, blank=True)
 
     appt_status = models.CharField(
         verbose_name=("Status"),
@@ -114,7 +115,7 @@ class Appointment(SyncModelMixin, BaseUuidModel):
 
     history = SyncHistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} {1} for {2}.{3}".format(
             self.registered_subject.subject_identifier, self.registered_subject.subject_type,
             self.visit_definition.code, self.visit_instance)
@@ -141,7 +142,8 @@ class Appointment(SyncModelMixin, BaseUuidModel):
     def natural_key(self):
         """Returns a natural key."""
         return (self.visit_instance, ) + self.visit_definition.natural_key() + self.registered_subject.natural_key()
-    natural_key.dependencies = ['edc_registration.registeredsubject', 'edc_visit_schedule.visitdefinition']
+    natural_key.dependencies = [
+        'edc_registration.registeredsubject', 'edc_visit_schedule.visitdefinition']
 
     def validate_visit_instance(self, exception_cls=None):
         exception_cls = exception_cls or ValidationError
@@ -173,7 +175,8 @@ class Appointment(SyncModelMixin, BaseUuidModel):
                 appt_status = COMPLETE_APPT
             else:
                 if appt_status in [COMPLETE_APPT, INCOMPLETE]:
-                    appt_status = INCOMPLETE if self.unkeyed_forms() else COMPLETE_APPT
+                    appt_status = INCOMPLETE if self.unkeyed_forms(
+                    ) else COMPLETE_APPT
                 elif appt_status in [NEW_APPT, CANCELLED, IN_PROGRESS]:
                     appt_status = IN_PROGRESS
                     self.update_others_as_not_in_progress(using)
@@ -223,7 +226,8 @@ class Appointment(SyncModelMixin, BaseUuidModel):
         exception_cls = exception_cls or ValidationError
         try:
             if self.time_point_status.status == CLOSED:
-                raise ValidationError('Data entry for this time point is closed. See TimePointStatus.')
+                raise ValidationError(
+                    'Data entry for this time point is closed. See TimePointStatus.')
         except AttributeError:
             pass
         except TimePointStatus.DoesNotExist:
@@ -246,7 +250,8 @@ class Appointment(SyncModelMixin, BaseUuidModel):
             best_appt_datetime = self.appt_datetime
         else:
             if not self.best_appt_datetime:
-                # did you update best_appt_datetime for existing instances since the migration?
+                # did you update best_appt_datetime for existing instances
+                # since the migration?
                 raise exception_cls(
                     'Appointment instance attribute \'best_appt_datetime\' cannot be null on change.')
             appt_datetime = appointment_date_helper.change_datetime(
@@ -356,5 +361,6 @@ class Appointment(SyncModelMixin, BaseUuidModel):
 
     class Meta:
         app_label = 'edc_appointment'
-        unique_together = (('registered_subject', 'visit_definition', 'visit_instance'),)
+        unique_together = (
+            ('registered_subject', 'visit_definition', 'visit_instance'),)
         ordering = ['registered_subject', 'appt_datetime', ]
