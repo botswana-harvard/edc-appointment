@@ -184,8 +184,9 @@ class Appointment(SyncModelMixin, BaseUuidModel):
                     raise AppointmentStatusError(
                         'Did not expect appt_status == \'{0}\''.format(self.appt_status))
         except visit_model.DoesNotExist:
-            if self.appt_status not in [NEW_APPT, CANCELLED]:
-                appt_status = NEW_APPT
+            pass
+#             if self.appt_status not in [NEW_APPT, CANCELLED]:
+#                 appt_status = NEW_APPT
         return appt_status
 
     def update_others_as_not_in_progress(self, using):
