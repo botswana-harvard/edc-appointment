@@ -19,10 +19,16 @@ class AppointmentAdmin(BaseModelAdmin):
     inlines = [PreAppointmentContactInlineAdmin, ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """Limits the dropdown for 'registered_subject'"""
+        """Filters visit according to group and limits the"""
+        """ dropdown for 'registered_subject'"""
         if db_field.name == "registered_subject":
             if request.GET.get('registered_subject'):
-                kwargs["queryset"] = RegisteredSubject.objects.filter(pk=request.GET.get('registered_subject'))
+                kwargs["queryset"] = RegisteredSubject.objects.filter(
+                    pk=request.GET.get('registered_subject'))
+                self.visit_def = VisitDefinition.objects.filter(
+                    grouping=RegisteredSubject.objects.filter(
+                        pk=request.GET.get('registered_subject'))[0].subject_type,
+                    instruction=request.GET.get('instruction'))
             else:
                 self.readonly_fields = list(self.readonly_fields)
                 try:
@@ -31,8 +37,11 @@ class AppointmentAdmin(BaseModelAdmin):
                     self.readonly_fields.append('registered_subject')
         if db_field.name == "visit_definition":
             if request.GET.get('visit_definition'):
-                kwargs["queryset"] = VisitDefinition.objects.filter(pk=request.GET.get('visit_definition'))
+                kwargs["queryset"] = VisitDefinition.objects.filter(
+                    pk=request.GET.get('visit_definition'))
             else:
+                if self.visit_def:
+                    kwargs["queryset"] = self.visit_def
                 self.readonly_fields = list(self.readonly_fields)
                 try:
                     self.readonly_fields.index('visit_definition')
@@ -83,5 +92,6 @@ class AppointmentAdmin(BaseModelAdmin):
     radio_fields = {
         "appt_status": admin.VERTICAL,
         'appt_type': admin.VERTICAL}
+
 
 admin.site.register(Appointment, AppointmentAdmin)
