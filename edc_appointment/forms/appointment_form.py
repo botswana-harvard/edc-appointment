@@ -29,12 +29,14 @@ class AppointmentForm(forms.ModelForm):
     def clean_appt_datetime(self):
         appt_datetime = self.cleaned_data['appt_datetime']
         if not appt_datetime:
-            raise forms.ValidationError('Please provide the appointment date and time.')
+            raise forms.ValidationError(
+                'Please provide the appointment date and time.')
         return appt_datetime
 
     def validate_time_point_status(self):
         try:
-            self.instance.time_point_status_open_or_raise(exception_cls=forms.ValidationError)
+            self.instance.time_point_status_open_or_raise(
+                exception_cls=forms.ValidationError)
         except AttributeError as e:
             if 'time_point_status_open_or_raise' not in str(e):
                 raise AttributeError(e)
@@ -42,9 +44,11 @@ class AppointmentForm(forms.ModelForm):
     def validate_visit_instance(self):
         """Validates the visit instance using the model method."""
         cleaned_data = self.cleaned_data
-        cleaned_data.update({'registered_subject': self.get_registered_subject()})
-        cleaned_data.update({'visit_definition': self.get_visit_definition()})
-        cleaned_data.update({'time_point_status': self.get_time_point_status()})
+        cleaned_data.update(
+            {'registered_subject': self.get_registered_subject()})
+#         cleaned_data.update({'visit_definition': self.get_visit_definition()})
+        cleaned_data.update(
+            {'time_point_status': self.get_time_point_status()})
         options = model_to_dict(self.instance)
         options.update(cleaned_data)
         try:
@@ -59,9 +63,12 @@ class AppointmentForm(forms.ModelForm):
         visit_instance = cleaned_data.get("visit_instance") or '0'
         if visit_instance != '0':
             cleaned_data = self.cleaned_data
-            cleaned_data.update({'registered_subject': self.get_registered_subject()})
-            cleaned_data.update({'visit_definition': self.get_visit_definition()})
-            cleaned_data.update({'time_point_status': self.get_time_point_status()})
+            cleaned_data.update(
+                {'registered_subject': self.get_registered_subject()})
+            cleaned_data.update(
+                {'visit_definition': self.get_visit_definition()})
+            cleaned_data.update(
+                {'time_point_status': self.get_time_point_status()})
             options = model_to_dict(self.instance)
             options.update(cleaned_data)
             try:
@@ -80,6 +87,8 @@ class AppointmentForm(forms.ModelForm):
             options = dict(
                 appointment__registered_subject=registered_subject,
                 appointment__visit_definition=visit_definition,
+                appointment__visit_instance=self.cleaned_data.get(
+                    'visit_instance'),
                 entry_status=UNKEYED)
             if CrfMetaData.objects.filter(**options).exists():
                 raise forms.ValidationError(
@@ -97,6 +106,8 @@ class AppointmentForm(forms.ModelForm):
             options = dict(
                 appointment__registered_subject=registered_subject,
                 appointment__visit_definition=visit_definition,
+                appointment__visit_instance=self.cleaned_data.get(
+                    'visit_instance'),
                 entry_status=KEYED)
             if CrfMetaData.objects.filter(**options).exists():
                 raise forms.ValidationError(
