@@ -28,7 +28,7 @@ class AppointmentAdmin(BaseModelAdmin):
                 self.visit_def = VisitDefinition.objects.filter(
                     grouping=RegisteredSubject.objects.filter(
                         pk=request.GET.get('registered_subject'))[0].subject_type,
-                    instruction=request.GET.get('instruction'))
+                    instruction__icontains=request.GET.get('instruction'))
             else:
                 self.readonly_fields = list(self.readonly_fields)
                 try:
