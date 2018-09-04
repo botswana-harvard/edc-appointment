@@ -19,8 +19,10 @@ class BaseModelAdmin(ModelAdminRedirectMixin, ModelAdminFormInstructionsMixin, M
         dashboard_model = request.GET.get('dashboard_model')
         dashboard_id = request.GET.get('dashboard_id')
         show = request.GET.get('show')
+        instruction = request.GET.get('instruction')
         return reverse(url_name, kwargs={
             'dashboard_type': dashboard_type,
             'dashboard_model': dashboard_model,
             'dashboard_id': dashboard_id,
-            'show': show})
+            'show': show,
+            'instruction': instruction})

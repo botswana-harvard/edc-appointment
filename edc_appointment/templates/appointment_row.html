@@ -67,10 +67,10 @@
     <td>
     {% if show = 'appointments' %}
         {% if appointment|get_field:appointment_visit_attr|get_field:'pk'%}
-            <A href="{% url subject_dashboard_url|default:'dashboard_url' dashboard_type=dashboard_type dashboard_model='visit' dashboard_id=appointment|get_field:appointment_visit_attr|get_field:'pk' show='forms' %}">show forms</A>                    
+            <A href="{% url subject_dashboard_url|default:'dashboard_url' dashboard_type=dashboard_type dashboard_model='visit' dashboard_id=appointment|get_field:appointment_visit_attr|get_field:'pk' show='forms' instruction=instruction %}">show forms</A>                    
         {% endif %}
     {% else %}
-        <A href="{% url subject_dashboard_url|default:'dashboard_url' dashboard_type=dashboard_type dashboard_model='appointment' dashboard_id=appointment.pk show='appointments'%}">show appointments</A>
+        <A href="{% url subject_dashboard_url|default:'dashboard_url' dashboard_type=dashboard_type dashboard_model='appointment' dashboard_id=appointment.pk show='appointments' instruction=instruction %}">show appointments</A>
     {% endif %}
     </td>
 {% endblock show_column %}
