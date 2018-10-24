@@ -1,11 +1,11 @@
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
-
 from edc_constants.constants import IN_PROGRESS, COMPLETE_APPT, KEYED, UNKEYED, NEW_APPT
+
 from edc_meta_data.models import CrfMetaData, RequisitionMetaData
 
 from ..models import Appointment
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class AppointmentForm(forms.ModelForm):
@@ -46,7 +46,7 @@ class AppointmentForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         cleaned_data.update(
             {'registered_subject': self.get_registered_subject()})
-#         cleaned_data.update({'visit_definition': self.get_visit_definition()})
+        cleaned_data.update({'visit_definition': self.get_visit_definition()})
         cleaned_data.update(
             {'time_point_status': self.get_time_point_status()})
         options = model_to_dict(self.instance)
