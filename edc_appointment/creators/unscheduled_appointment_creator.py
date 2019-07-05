@@ -1,8 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
 
-from ..constants import COMPLETE_APPT, INCOMPLETE_APPT, NEW_APPT
 from ..constants import CANCELLED_APPT, IN_PROGRESS_APPT
+from ..constants import COMPLETE_APPT, INCOMPLETE_APPT, NEW_APPT
 from .appointment_creator import AppointmentCreator
 
 
@@ -86,6 +86,7 @@ class UnscheduledAppointmentCreator:
                 timepoint_datetime=self.parent_appointment.timepoint_datetime,
                 visit_code_sequence=self.parent_appointment.next_visit_code_sequence,
                 facility=self.facility,
+                appointment_model=self.appointment_model_cls._meta.label_lower,
                 appt_status=IN_PROGRESS_APPT)
             self.appointment = appointment_creator.appointment
         else:
