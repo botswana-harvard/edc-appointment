@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 from django.core.exceptions import ObjectDoesNotExist
 from edc_base import get_utcnow
 from edc_form_validators.form_validator import FormValidator
+from edc_visit_tracking.constants import MISSED_VISIT
 
 from ..constants import NEW_APPT, IN_PROGRESS_APPT, CANCELLED_APPT
 from ..constants import UNSCHEDULED_APPT, INCOMPLETE_APPT, COMPLETE_APPT
@@ -38,6 +39,15 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
         yet to be keyed.
         """
         return False
+
+    def visit_missed(self):
+
+        try:
+            visit = self.instance.visit
+        except ObjectDoesNotExist:
+            return False
+        else:
+            return visit.reason == MISSED_VISIT
 
     def validate_sequence(self):
         """Enforce appointment and visit entry sequence.
@@ -101,20 +111,22 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
 
     def validate_appt_inprogress_or_incomplete(self):
         appt_status = self.cleaned_data.get('appt_status')
-        if (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
-                and self.crf_metadata_required_exists):
-            raise forms.ValidationError({
-                'appt_status': 'Invalid. Not all required CRFs have been keyed'})
-        elif (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
-              and self.requisition_metadata_required_exists):
-            raise forms.ValidationError({
-                'appt_status':
-                'Invalid. Not all required requisitions have been keyed'})
-        elif (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
-              and self.required_additional_forms_exist):
-            raise forms.ValidationError({
-                'appt_status':
-                'Invalid. Not all required \'additional\' forms have been keyed'})
+
+        if not self.visit_missed():
+            if (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT, ]
+                    and self.crf_metadata_required_exists):
+                raise forms.ValidationError({
+                    'appt_status': 'Invalid. Not all required CRFs have been keyed'})
+            elif (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
+                  and self.requisition_metadata_required_exists):
+                raise forms.ValidationError({
+                    'appt_status':
+                    'Invalid. Not all required requisitions have been keyed'})
+            elif (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
+                  and self.required_additional_forms_exist):
+                raise forms.ValidationError({
+                    'appt_status':
+                    'Invalid. Not all required \'additional\' forms have been keyed'})
 
     def validate_appt_inprogress(self):
         appt_status = self.cleaned_data.get('appt_status')
