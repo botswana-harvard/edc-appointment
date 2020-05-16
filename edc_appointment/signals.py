@@ -1,3 +1,4 @@
+from django.apps import apps as django_apps
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
@@ -27,6 +28,12 @@ def appointment_post_save(sender, instance, raw, created, using, **kwargs):
         except AttributeError as e:
             if 'time_point_status' not in str(e):
                 raise
+
+    #         app_config = django_apps.get_app_config('edc_appointment')
+    #         send_sms_reminders = app_config.send_sms_reminders
+    #         sms_remind_num_days_before_app = app_config.sms_remind_num_days_before_app
+    #         if send_sms_reminders:
+    #             sms_remind_num_days_before_app
 
 
 @receiver(post_delete, weak=False,

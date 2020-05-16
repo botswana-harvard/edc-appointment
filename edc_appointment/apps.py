@@ -14,6 +14,8 @@ class AppConfig(DjangoAppConfig):
 
     _holidays = {}
     name = 'edc_appointment'
+    send_sms_reminders = False
+    remind_num_days_bfr_app = 4
     verbose_name = "Edc Appointments"
     configurations = [
         AppointmentConfig(

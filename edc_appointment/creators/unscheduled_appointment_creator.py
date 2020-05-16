@@ -97,9 +97,10 @@ class UnscheduledAppointmentCreator:
                 appt_status=appt_status or IN_PROGRESS_APPT)
             self.appointment = appointment_creator.appointment
         else:
-            self.check_appointmentt_in_progress(self.check_appointment)
+            self.check_appointment_in_progress(
+                self.check_appointment, visit_code=self.visit_code)
 
-    def check_appointmentt_in_progress(self, check=True):
+    def check_appointment_in_progress(self, check=True, visit_code=None):
         if check:
             raise UnscheduledAppointmentNotAllowed(
                 f'Not allowed. Visit {visit_code} is not configured for '
