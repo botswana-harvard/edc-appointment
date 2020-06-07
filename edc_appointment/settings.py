@@ -1,3 +1,4 @@
+import configparser
 import os
 import sys
 
@@ -16,6 +17,15 @@ SECRET_KEY = 'gla3c^n2%i$bh7q%b+_$gpcs@7q5gi+3t%ae7ncdzv5(=r)^ke'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+ETC_DIR = '/etc/'
+
+
+CONFIG_FILE = f'{APP_NAME}.ini'
+CONFIG_PATH = os.path.join(ETC_DIR, APP_NAME, CONFIG_FILE)
+config = configparser.ConfigParser()
+config.read(CONFIG_PATH)
+BASE_API_URL = config['edc_sms']['base_api_url']
 
 
 # Application definition
@@ -38,6 +48,7 @@ INSTALLED_APPS = [
     'edc_protocol.apps.AppConfig',
     'edc_visit_tracking.apps.AppConfig',
     'edc_visit_schedule.apps.AppConfig',
+    'edc_appointment.apps.EdcSmsAppConfig',
     'edc_appointment.apps.EdcFacilityAppConfig',
     'edc_appointment.apps.AppConfig',
 ]
@@ -108,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Gaborone'
 
 USE_I18N = True
 

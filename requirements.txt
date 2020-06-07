@@ -1,3 +1,4 @@
+django-apscheduler
 git+https://github.com/botswana-harvard/edc-base@develop#egg=edc_base
 git+https://github.com/botswana-harvard/django-crypto-fields@develop#egg=django_crypto_fields
 git+https://github.com/botswana-harvard/django-revision@develop#egg=django_revision
@@ -21,3 +22,4 @@ git+https://github.com/botswana-harvard/edc-metadata@develop#edc-metadata
 git+https://github.com/botswana-harvard/edc-metadata-rules@develop#edc-metadata-rules
 git+https://github.com/botswana-harvard/edc-reference@develop#edc-reference
 git+https://github.com/botswana-harvard/edc-label@develop#edc-label
+git+https://github.com/botswana-harvard/edc-search.git@develop#egg=edc_search

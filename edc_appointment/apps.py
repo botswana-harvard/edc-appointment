@@ -14,14 +14,16 @@ class AppConfig(DjangoAppConfig):
 
     _holidays = {}
     name = 'edc_appointment'
-    send_sms_reminders = False
-    remind_num_days_bfr_app = 4
     verbose_name = "Edc Appointments"
     configurations = [
         AppointmentConfig(
             model='edc_appointment.appointment',
             related_visit_model='edc_appointment.subjectvisit')
     ]
+
+    # SMS appointment reminder confs
+    send_sms_reminders = True
+    remind_num_days_bfr_app = 4
 
     def ready(self):
         from .signals import (
@@ -58,6 +60,7 @@ if settings.APP_NAME == 'edc_appointment':
 
     from dateutil.relativedelta import SU, MO, TU, WE, TH, FR, SA
     from edc_facility.apps import AppConfig as BaseEdcFacilityAppConfig
+    from edc_sms.apps import AppConfig as BaseEdcSmsAppConfig
 
     class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):
         definitions = {
@@ -68,3 +71,8 @@ if settings.APP_NAME == 'edc_appointment':
             '3-day-clinic': dict(days=[TU, WE, TH],
                                  slots=[100, 100, 100],
                                  best_effort_available_datetime=True)}
+
+    class EdcSmsAppConfig(BaseEdcSmsAppConfig):
+        locator_auto_create_contact = True
+        locator_model = 'edc_appointment.locator'
+        consent_model = 'edc_appointment.subjectconsent'
