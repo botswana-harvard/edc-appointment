@@ -50,8 +50,7 @@ class AppointmentSmsReminder:
     def schedule_or_send_sms_reminder(self, appt_reminder_date=None):
         """Sends or schedules an appointment sms reminder.
         """
-        schedule_datetime = self.reminder_date(
-            appt_datetime=appt_reminder_date)
+        schedule_datetime = appt_reminder_date + timedelta(minutes=2)
         self.message_schedule().schedule_message(
             message_data=self.sms_message_data,
             recipient_number=self.recipient_number,

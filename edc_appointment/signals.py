@@ -31,35 +31,35 @@ def appointment_post_save(sender, instance, raw, created, using, **kwargs):
             if 'time_point_status' not in str(e):
                 raise
 
-#         if created:
-        # Appointment sms reminder
-        app_config = django_apps.get_app_config('edc_appointment')
-        send_sms_reminders = app_config.send_sms_reminders
+        if created:
+            # Appointment sms reminder
+            app_config = django_apps.get_app_config('edc_appointment')
+            send_sms_reminders = app_config.send_sms_reminders
 
-        if send_sms_reminders:
-            try:
-                appt_datetime = instance.appt_datetime.strftime(
-                    "%B+%d,+%Y,+%H:%M:%S")
-            except AttributeError:
-                pass
-            else:
-                edc_sms_app_config = django_apps.get_app_config('edc_sms')
-                consent_mdl_cls = django_apps.get_model(
-                    edc_sms_app_config.consent_model)
-                consent = consent_mdl_cls.objects.filter(
-                    subject_identifier=instance.subject_identifier)
-                if consent:
-                    consent = consent[0]
-                sms_message_data = (
-                    f'Dear+participant+Reminder+for+an+appointment+on+{appt_datetime}')
-                appt_sms_reminder = AppointmentSmsReminder(
-                    subject_identifier=instance.subject_identifier,
-                    appt_datetime=instance.appt_datetime,
-                    sms_message_data=sms_message_data,
-                    recipient_number=consent.recipient_number)
-                appt_reminder_date = appt_sms_reminder.reminder_date()
-                appt_sms_reminder.schedule_or_send_sms_reminder(
-                    appt_reminder_date=appt_reminder_date)
+            if send_sms_reminders:
+                try:
+                    appt_datetime = instance.appt_datetime.strftime(
+                        "%B+%d,+%Y,+%H:%M:%S")
+                except AttributeError:
+                    pass
+                else:
+                    edc_sms_app_config = django_apps.get_app_config('edc_sms')
+                    consent_mdl_cls = django_apps.get_model(
+                        edc_sms_app_config.consent_model)
+                    consent = consent_mdl_cls.objects.filter(
+                        subject_identifier=instance.subject_identifier)
+                    if consent:
+                        consent = consent[0]
+                    sms_message_data = (
+                        f'Dear+participant+Reminder+for+an+appointment+on+{appt_datetime}')
+                    appt_sms_reminder = AppointmentSmsReminder(
+                        subject_identifier=instance.subject_identifier,
+                        appt_datetime=instance.appt_datetime,
+                        sms_message_data=sms_message_data,
+                        recipient_number=consent.recipient_number)
+                    appt_reminder_date = instance.appt_datetime
+                    appt_sms_reminder.schedule_or_send_sms_reminder(
+                        appt_reminder_date=appt_reminder_date)
 
 
 @receiver(post_delete, weak=False,
