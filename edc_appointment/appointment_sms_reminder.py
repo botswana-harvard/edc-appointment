@@ -32,13 +32,13 @@ class AppointmentSmsReminder:
         """
         appt_datetime = appt_datetime or self.appt_datetime
         if appt_datetime.date() == get_utcnow().date():
-            return get_utcnow() + timedelta(hours=2, seconds=20)
+            return get_utcnow() + timedelta(hours=2, minutes=1)
         elif appt_datetime.date() > get_utcnow().date():
             delta = appt_datetime.date() - get_utcnow().date()
             if delta.days <= self.remind_num_days_bfr_app:
-                return get_utcnow() + timedelta(hours=2, seconds=20)
+                return get_utcnow() + timedelta(hours=2, minutes=1)
             else:
-                appt_datetime = appt_datetime + timedelta(hours=2, seconds=20)
+                appt_datetime = appt_datetime + timedelta(hours=2, minutes=1)
                 return appt_datetime - timedelta(
                     self.remind_num_days_bfr_app)
         elif appt_datetime.date() < get_utcnow().date():
