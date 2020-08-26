@@ -22,7 +22,7 @@ class AppConfig(DjangoAppConfig):
     ]
 
     # SMS appointment reminder confs
-    send_sms_reminders = True
+    send_sms_reminders = False
     remind_num_days_bfr_app = 1
 
     def ready(self):
