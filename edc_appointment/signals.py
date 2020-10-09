@@ -35,7 +35,7 @@ def appointment_post_save(sender, instance, raw, created, using, **kwargs):
             # Appointment sms reminder
             app_config = django_apps.get_app_config('edc_appointment')
             send_sms_reminders = app_config.send_sms_reminders
-    
+
             if send_sms_reminders:
                 try:
                     appt_datetime = instance.appt_datetime.strftime(
