@@ -24,12 +24,14 @@ class AppConfig(DjangoAppConfig):
     # SMS appointment reminder confs
     send_sms_reminders = False
     remind_num_days_bfr_app = 1
+    appt_reminder_model = 'edc_appointment.appointment'
 
     def ready(self):
         from .signals import (
             create_appointments_on_post_save,
             appointment_post_save,
-            delete_appointments_on_post_delete)
+            delete_appointments_on_post_delete,
+            appointment_reminder_on_post_save)
 
         sys.stdout.write(f'Loading {self.verbose_name} ...\n')
         for config in self.configurations:
