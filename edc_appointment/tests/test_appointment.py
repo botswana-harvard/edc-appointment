@@ -3,7 +3,7 @@ import arrow
 from datetime import datetime
 from dateutil.relativedelta import relativedelta, SU, MO, TU, WE, TH, FR, SA
 from decimal import Context
-from django.test import TestCase, tag
+from django.test import TestCase
 from edc_base.utils import get_utcnow
 from edc_facility.import_holidays import import_holidays
 from edc_visit_schedule.site_visit_schedules import site_visit_schedules
@@ -180,7 +180,8 @@ class TestAppointment(TestCase):
         self.assertEqual(
             Appointment.objects.filter(
                 subject_identifier=self.subject_identifier,
-                visit_schedule_name='visit_schedule2').order_by('appt_datetime')[0],
+                visit_schedule_name='visit_schedule2').order_by(
+                    'appt_datetime')[0],
             first_appointment)
 
     def test_first_appointment_with_unscheduled(self):
@@ -231,14 +232,16 @@ class TestAppointment(TestCase):
             schedule_name='schedule1')
         self.assertEqual(
             Appointment.objects.filter(
-                subject_identifier=onschedule.subject_identifier).order_by('appt_datetime')[1],
+                subject_identifier=onschedule.subject_identifier).order_by(
+                    'appt_datetime')[1],
             next_appointment)
 
         next_appointment = Appointment.objects.next_appointment(
             appointment=first_appointment)
         self.assertEqual(
             Appointment.objects.filter(
-                subject_identifier=onschedule.subject_identifier).order_by('appt_datetime')[1],
+                subject_identifier=onschedule.subject_identifier).order_by(
+                    'appt_datetime')[1],
             next_appointment)
 
     def test_next_appointment_with_unscheduled(self):
