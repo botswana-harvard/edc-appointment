@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='edc-appointment',
-    version='0.2.14',
+    version='0.2.16',
     author=u'Software Engineering & Data Management',
     author_email='se-dmc@bhp.org.bw',
     packages=find_packages(),

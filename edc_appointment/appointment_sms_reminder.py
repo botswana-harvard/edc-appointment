@@ -54,4 +54,5 @@ class AppointmentSmsReminder:
         self.message_schedule().schedule_message(
             message_data=self.sms_message_data,
             recipient_number=self.recipient_number,
+            subject_identifier=self.subject_identifier,
             sms_type='reminder', schedule_datetime=schedule_datetime)

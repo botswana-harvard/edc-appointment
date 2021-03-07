@@ -31,11 +31,34 @@ def appointment_post_save(sender, instance, raw, created, using, **kwargs):
             if 'time_point_status' not in str(e):
                 raise
 
+
+@receiver(post_delete, weak=False,
+          dispatch_uid="delete_appointments_on_post_delete")
+def delete_appointments_on_post_delete(sender, instance, using, **kwargs):
+    try:
+        instance.delete_unused_appointments()
+    except AttributeError:
+        pass
+
+
+def appointment_reminder_model_cls():
+    app_config = django_apps.get_app_config('edc_appointment')
+    model = app_config.appt_reminder_model
+    return django_apps.get_model(model)
+
+
+@receiver(post_save, weak=True, sender=appointment_reminder_model_cls(),
+          dispatch_uid='appointment_reminder_on_post_save')
+def appointment_reminder_on_post_save(sender, instance, raw, created, using, **kwargs):
+    """
+    Schedule an sms reminder when appointment is created.
+    """
+    if not raw:
         if created:
             # Appointment sms reminder
             app_config = django_apps.get_app_config('edc_appointment')
             send_sms_reminders = app_config.send_sms_reminders
-    
+
             if send_sms_reminders:
                 try:
                     appt_datetime = instance.appt_datetime.strftime(
@@ -60,12 +83,3 @@ def appointment_post_save(sender, instance, raw, created, using, **kwargs):
                     appt_reminder_date = instance.appt_datetime
                     appt_sms_reminder.schedule_or_send_sms_reminder(
                         appt_reminder_date=appt_reminder_date)
-
-
-@receiver(post_delete, weak=False,
-          dispatch_uid="delete_appointments_on_post_delete")
-def delete_appointments_on_post_delete(sender, instance, using, **kwargs):
-    try:
-        instance.delete_unused_appointments()
-    except AttributeError:
-        pass
