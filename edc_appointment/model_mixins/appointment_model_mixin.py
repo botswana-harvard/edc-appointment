@@ -1,3 +1,4 @@
+from django.apps import apps as django_apps
 from django.db import models
 from edc_identifier.model_mixins import NonUniqueSubjectIdentifierFieldMixin
 from edc_timepoint.model_mixins import TimepointModelMixin
