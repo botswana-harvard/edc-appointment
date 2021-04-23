@@ -1,10 +1,8 @@
-from django.apps import apps as django_apps
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from edc_identifier.model_mixins import NonUniqueSubjectIdentifierFieldMixin
 from edc_timepoint.model_mixins import TimepointModelMixin
 from edc_visit_schedule.model_mixins import VisitScheduleModelMixin
-from edc_calendar.models import UpdatesOrCreatesCalenderEventModelMixin
+from edc_calender.models import UpdatesOrCreatesCalenderEventModelMixin
 from uuid import UUID
 
 from ..choices import APPT_TYPE, APPT_STATUS, APPT_REASON
