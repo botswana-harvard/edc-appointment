@@ -4,6 +4,7 @@ from django.db import models
 from edc_identifier.model_mixins import NonUniqueSubjectIdentifierFieldMixin
 from edc_timepoint.model_mixins import TimepointModelMixin
 from edc_visit_schedule.model_mixins import VisitScheduleModelMixin
+from edc_calendar.models import UpdatesOrCreatesCalenderEventModelMixin
 from uuid import UUID
 
 from ..choices import APPT_TYPE, APPT_STATUS, APPT_REASON
@@ -12,6 +13,7 @@ from ..managers import AppointmentManager
 
 
 class AppointmentModelMixin(NonUniqueSubjectIdentifierFieldMixin,
+                            UpdatesOrCreatesCalenderEventModelMixin,
                             TimepointModelMixin, VisitScheduleModelMixin):
 
     """Mixin for the appointment model only.

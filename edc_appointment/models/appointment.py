@@ -2,7 +2,6 @@ from edc_base.model_managers import HistoricalRecords
 from edc_base.model_mixins import BaseUuidModel
 from edc_base.sites import CurrentSiteManager as BaseCurrentSiteManager
 from edc_base.sites import CurrentSiteManager, SiteModelMixin
-from edc_calender.models import UpdatesOrCreatesCalenderEventModelMixin
 
 from ..managers import AppointmentManager
 from ..model_mixins import AppointmentModelMixin
@@ -20,7 +19,7 @@ class CurrentSiteManager(BaseCurrentSiteManager):
             visit_code_sequence=visit_code_sequence)
 
 
-class Appointment(AppointmentModelMixin, UpdatesOrCreatesCalenderEventModelMixin,
+class Appointment(AppointmentModelMixin,
                   SiteModelMixin, BaseUuidModel):
 
     on_site = CurrentSiteManager()
