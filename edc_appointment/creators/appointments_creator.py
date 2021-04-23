@@ -28,6 +28,7 @@ class AppointmentsCreator:
         days in the facility.
         """
         app_config = django_apps.get_app_config('edc_facility')
+        edc_protocol = django_apps.get_app_config('edc_protocol')
         appointments = []
         taken_datetimes = taken_datetimes or []
         base_appt_datetime = base_appt_datetime or self.report_datetime
@@ -36,18 +37,19 @@ class AppointmentsCreator:
         timepoint_dates = self.schedule.visits.timepoint_dates(
             dt=base_appt_datetime)
         for visit, timepoint_datetime in timepoint_dates.items():
-            try:
-                facility = app_config.get_facility(visit.facility_name)
-            except FacilityError as e:
-                raise CreateAppointmentError(
-                    f'{e} See {repr(visit)}. Got facility_name={visit.facility_name}')
-            appointment = self.update_or_create_appointment(
-                visit=visit,
-                taken_datetimes=taken_datetimes,
-                timepoint_datetime=timepoint_datetime,
-                facility=facility)
-            appointments.append(appointment)
-            taken_datetimes.append(appointment.appt_datetime)
+            if timepoint_datetime <= edc_protocol.study_close_datetime:
+                try:
+                    facility = app_config.get_facility(visit.facility_name)
+                except FacilityError as e:
+                    raise CreateAppointmentError(
+                        f'{e} See {repr(visit)}. Got facility_name={visit.facility_name}')
+                appointment = self.update_or_create_appointment(
+                    visit=visit,
+                    taken_datetimes=taken_datetimes,
+                    timepoint_datetime=timepoint_datetime,
+                    facility=facility)
+                appointments.append(appointment)
+                taken_datetimes.append(appointment.appt_datetime)
         return appointments
 
     def update_or_create_appointment(self, **kwargs):
