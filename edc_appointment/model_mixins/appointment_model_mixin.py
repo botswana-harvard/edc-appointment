@@ -221,6 +221,16 @@ class AppointmentModelMixin(NonUniqueSubjectIdentifierFieldMixin,
     def report_datetime(self):
         return self.appt_datetime
 
+    @property
+    def event_options(self):
+        """Returns the dict of the following attrs
+        `title` `description` `start_time`  `end_time`.
+        """
+        return {
+            'description': self.appt_reason,
+            'start_time': self.appt_datetime,
+            'end_time': self.appt_datetime, }
+
     class Meta:
         abstract = True
         unique_together = (

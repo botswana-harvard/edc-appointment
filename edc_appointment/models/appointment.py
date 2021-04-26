@@ -34,17 +34,8 @@ class Appointment(AppointmentModelMixin,
                 self.schedule_name,
                 self.visit_code,
                 self.visit_code_sequence)
-    natural_key.dependencies = ['sites.Site']
 
-    @property
-    def event_options(self):
-        """Returns the dict of the following attrs
-        `title` `description` `start_time`  `end_time`.
-        """
-        return {
-            'description': self.appt_reason,
-            'start_time': self.appt_datetime,
-            'end_time': self.appt_datetime,}
+    natural_key.dependencies = ['sites.Site']
 
     class Meta(AppointmentModelMixin.Meta):
         pass
