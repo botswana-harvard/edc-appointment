@@ -89,7 +89,8 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
 
     def validate_not_future_appt_datetime(self):
         appt_datetime = self.cleaned_data.get('appt_datetime')
-        if appt_datetime and appt_datetime != NEW_APPT:
+        appt_status = self.cleaned_data.get('appt_status')
+        if appt_datetime and appt_status and appt_status != NEW_APPT:
             rappt_datetime = Arrow.fromdatetime(
                 appt_datetime, appt_datetime.tzinfo)
             if rappt_datetime.to('UTC').date() > get_utcnow().date():
