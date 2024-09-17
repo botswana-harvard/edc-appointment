@@ -36,6 +36,7 @@ class AppointmentsCreator:
             base_appt_datetime, base_appt_datetime.tzinfo).to('utc').datetime
         timepoint_dates = self.schedule.visits.timepoint_dates(
             dt=base_appt_datetime)
+
         for visit, timepoint_datetime in timepoint_dates.items():
             if timepoint_datetime <= edc_protocol.study_close_datetime:
                 try:

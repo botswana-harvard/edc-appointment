@@ -36,7 +36,7 @@ class UnscheduledAppointmentCreator:
                  timepoint_datetime=None, suggested_datetime=None,
                  check_appointment=True,
                  **kwargs):
-        self._parent_appointment = None
+        self._parent_appointment = kwargs.get('parent_appointment', None)
         self.appointment = None
         self.check_appointment = check_appointment
         self.subject_identifier = subject_identifier
