@@ -6,9 +6,9 @@ from edc_base import get_utcnow
 from edc_form_validators.form_validator import FormValidator
 from edc_visit_tracking.constants import MISSED_VISIT
 
-from ..constants import NEW_APPT, IN_PROGRESS_APPT, CANCELLED_APPT
-from ..constants import UNSCHEDULED_APPT, INCOMPLETE_APPT, COMPLETE_APPT
 from .metadata_form_validator_mixin import MetaDataFormValidatorMixin
+from ..constants import CANCELLED_APPT, IN_PROGRESS_APPT, NEW_APPT
+from ..constants import COMPLETE_APPT, INCOMPLETE_APPT, UNSCHEDULED_APPT
 
 
 class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
@@ -28,6 +28,7 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
         self.validate_appt_new_or_complete()
         self.validate_facility_name()
         self.validate_appt_reason()
+        self.validate_appt_complete()
 
     @property
     def appointment_model_cls(self):
@@ -64,9 +65,9 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
                 ).order_by('appointment__appt_datetime').last()
                 if last_visit:
                     raise forms.ValidationError(
-                        f'A previous visit report is required. Enter the visit report for '
-                        f'appointment {last_visit.appointment.next.visit_code} before '
-                        'starting with this appointment.')
+                        f'A previous visit report is required. Enter the visit report '
+                        f'for appointment {last_visit.appointment.next.visit_code} '
+                        f'before starting with this appointment.')
             except AttributeError:
                 pass
 
@@ -122,39 +123,51 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
                   and self.requisition_metadata_required_exists):
                 raise forms.ValidationError({
                     'appt_status':
-                    'Invalid. Not all required requisitions have been keyed'})
+                        'Invalid. Not all required requisitions have been keyed'})
             elif (appt_status not in [INCOMPLETE_APPT, IN_PROGRESS_APPT]
                   and self.required_additional_forms_exist):
                 raise forms.ValidationError({
                     'appt_status':
-                    'Invalid. Not all required \'additional\' forms have been keyed'})
+                        'Invalid. Not all required \'additional\' forms have been keyed'})
 
     def validate_appt_inprogress(self):
         appt_status = self.cleaned_data.get('appt_status')
         if appt_status == IN_PROGRESS_APPT and self.appointment_in_progress_exists:
             raise forms.ValidationError({
                 'appt_status':
-                'Invalid. Another appointment in this schedule is in progress.'})
+                    'Invalid. Another appointment in this schedule is in progress.'})
 
     def validate_appt_new_or_complete(self):
         appt_status = self.cleaned_data.get('appt_status')
         if (appt_status not in [COMPLETE_APPT, NEW_APPT]
                 and self.crf_metadata_exists
-                and self.requisition_metadata_exists
-                and not self.crf_metadata_required_exists
-                and not self.requisition_metadata_required_exists
-                and not self.required_additional_forms_exist):
+                and self.requisition_metadata_exists):
             if not self.crf_metadata_required_exists:
                 raise forms.ValidationError({
                     'appt_status': 'Invalid. All required CRFs have been keyed'})
             elif not self.requisition_metadata_required_exists:
                 raise forms.ValidationError({
                     'appt_status':
-                    'Invalid. All required requisitions have been keyed'})
+                        'Invalid. All required requisitions have been keyed'})
             elif not self.required_additional_forms_exist:
                 raise forms.ValidationError({
                     'appt_status':
-                    'Invalid. All required \'additional\' forms have been keyed'})
+                        'Invalid. All required \'additional\' forms have been keyed'})
+
+    def validate_appt_complete(self):
+        """Check if the appointment is marked as complete and validate the completion
+        based on certain criteria. raise validation error if the appointment status is
+        set to complete but the required CRFs or requisitions are not filled
+        """
+        appt_status = self.cleaned_data.get('appt_status')
+
+        if appt_status == COMPLETE_APPT:
+            if not self.crf_metadata_exists:
+                raise forms.ValidationError({
+                    'appt_status': 'Invalid. All required CRFs must be keyed'})
+            elif not self.requisition_metadata_exists:
+                raise forms.ValidationError({
+                    'appt_status': 'Invalid. All required requisitions must be keyed'})
 
     @property
     def appointment_in_progress_exists(self):
@@ -166,7 +179,7 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
             visit_schedule_name=self.instance.visit_schedule_name,
             schedule_name=self.instance.schedule_name,
             appt_status=IN_PROGRESS_APPT).exclude(
-                id=self.instance.id).exists()
+            id=self.instance.id).exists()
 
     def validate_facility_name(self):
         """Raises if facility_name not found in edc_facility.AppConfig.
@@ -187,7 +200,7 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
             raise forms.ValidationError({
                 'appt_reason': f'Expected {UNSCHEDULED_APPT.title()}'})
         elif (appt_reason
-                and not self.instance.visit_code_sequence
-                and appt_reason == UNSCHEDULED_APPT):
+              and not self.instance.visit_code_sequence
+              and appt_reason == UNSCHEDULED_APPT):
             raise forms.ValidationError({
                 'appt_reason': f'Cannot be {UNSCHEDULED_APPT.title()}'})
