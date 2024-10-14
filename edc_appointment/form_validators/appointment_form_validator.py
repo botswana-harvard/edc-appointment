@@ -28,7 +28,6 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
         self.validate_appt_new_or_complete()
         self.validate_facility_name()
         self.validate_appt_reason()
-        self.validate_appt_complete()
 
     @property
     def appointment_model_cls(self):
@@ -153,21 +152,6 @@ class AppointmentFormValidator(MetaDataFormValidatorMixin, FormValidator):
                 raise forms.ValidationError({
                     'appt_status':
                         'Invalid. All required \'additional\' forms have been keyed'})
-
-    def validate_appt_complete(self):
-        """Check if the appointment is marked as complete and validate the completion
-        based on certain criteria. raise validation error if the appointment status is
-        set to complete but the required CRFs or requisitions are not filled
-        """
-        appt_status = self.cleaned_data.get('appt_status')
-
-        if appt_status == COMPLETE_APPT:
-            if not self.crf_metadata_exists:
-                raise forms.ValidationError({
-                    'appt_status': 'Invalid. All required CRFs must be keyed'})
-            elif not self.requisition_metadata_exists:
-                raise forms.ValidationError({
-                    'appt_status': 'Invalid. All required requisitions must be keyed'})
 
     @property
     def appointment_in_progress_exists(self):
